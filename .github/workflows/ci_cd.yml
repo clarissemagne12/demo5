@@ -11,27 +11,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Cloner le repo
+      # 1. Checkout du repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Installer Java
-      - name: Set up Java
+      # 2. Installation de Java
+      - name: Set up Java 17
         uses: actions/setup-java@v3
         with:
-          distribution: temurin
-          java-version: 17
-          cache: maven
+          distribution: temurin       # ✅ distribution fiable
+          java-version: '17'          # version Java exacte
+          cache: maven                # cache Maven pour accélérer le build
 
-      # 3. Construire avec Maven
+      # 3. Construire le projet
       - name: Build with Maven
         run: mvn clean package --batch-mode
 
-      # 4. Lancer les tests (optionnel si inclus dans package)
+      # 4. Lancer les tests
       - name: Run Tests
         run: mvn test
 
-      # 5. Upload du JAR généré
+      # 5. Upload du JAR
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v3
         with:
