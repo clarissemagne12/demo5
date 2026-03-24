@@ -1,9 +1,39 @@
-name: Test CI
-on: [push]
+name: Java CI with Maven and JAR Upload
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      # 1. Cloner le repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Installer Java
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      # 3. Construire avec Maven
+      - name: Build with Maven
+        run: mvn clean package --batch-mode
+
+      # 4. Lancer les tests (optionnel si inclus dans package)
+      - name: Run Tests
+        run: mvn test
+
+      # 5. Upload du JAR généré
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: my-app-jar
+          path: target/*.jar
