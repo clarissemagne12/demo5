@@ -1,0 +1,14 @@
+package com.example.demo;
+
+import com.example.demo.entities.Agent;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface Agenti {
+    List<Agent> findAll();
+    Optional<Agent> findById(Long id);
+    Agent save(Agent agent);
+    void deleteById(Long id);
+    Agent update(Agent agent);
+}
