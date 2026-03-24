@@ -1,43 +1,55 @@
-name: Java CI
+name: Spring Boot CI with Maven
 
+# Déclencheurs du workflow
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
+    # Services si tu as besoin d'une base de données MySQL
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: testdb
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
       # 1. Checkout du code
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # 2. Setup Java
-      - name: Setup Java
+      # 2. Setup Java (Spring Boot nécessite Java 17+ en général)
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'       # JDK open-source recommandé
-          java-version: '17'            # Version de Java, par ex. 17, 20, etc.
-          cache: 'maven'                # Active le cache Maven pour accélérer les builds
+          distribution: temurin
+          java-version: 17
+          cache: maven
 
-      # 3. Build le projet avec Maven
-      - name: Build project
-        run: mvn clean install
+      # 3. Build et tests Maven
+      - name: Build with Maven
+        run: mvn clean verify --batch-mode
 
-      # 4. Run tests (optionnel si inclus dans mvn install)
-      - name: Run tests
-        run: mvn test
-
-      # 5. Package le JAR
-      - name: Package JAR
-        run: mvn package
-
-      # 6. Upload artifact (optionnel)
-      - name: Upload JAR
+      # 4. Upload du JAR en artifact
+      - name: Upload JAR Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: my-app-jar
+          name: spring-boot-jar
           path: target/*.jar
