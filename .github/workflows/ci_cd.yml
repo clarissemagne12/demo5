@@ -1,21 +1,15 @@
-name: Java CI with Maven Manual Install
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+name: Test CI
+on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      # 1. Checkout du repo
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      # 1. Checkout du code
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # 2. Installer Java 17 manuellement
+      # 2. Installer Java 17 manuellement (fiable)
       - name: Install Java 17
         run: |
           sudo apt-get update
@@ -23,17 +17,17 @@ jobs:
           java -version
           javac -version
 
-      # 3. Installer Maven manuellement
+      # 3. Installer Maven
       - name: Install Maven
         run: |
           sudo apt-get install -y maven
           mvn -version
 
-      # 4. Construire le projet
+      # 4. Build Maven et tests
       - name: Build with Maven
         run: mvn clean package --batch-mode
 
-      # 5. Upload du JAR
+      # 5. Upload du JAR généré
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v3
         with:
