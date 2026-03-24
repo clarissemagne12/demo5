@@ -1,4 +1,4 @@
-name: Java CI Debug
+name: Java CI with Maven Manual Install
 
 on:
   push:
@@ -15,37 +15,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Debug Java et Maven
-      - name: Debug environment
+      # 2. Installer Java 17 manuellement
+      - name: Install Java 17
         run: |
-          echo "OS info:"
-          uname -a
-          echo "Java version before setup:"
-          java -version || echo "Java not installed yet"
-          echo "Maven version before setup:"
-          mvn -version || echo "Maven not installed yet"
-
-      # 3. Installer Java explicitement
-      - name: Set up Java 17 (temurin)
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: '17'
-          cache: maven
-
-      # 4. Vérifier l'installation de Java
-      - name: Verify Java
-        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jdk
           java -version
           javac -version
+
+      # 3. Installer Maven manuellement
+      - name: Install Maven
+        run: |
+          sudo apt-get install -y maven
           mvn -version
 
-      # 5. Build Maven
-      - name: Build project
+      # 4. Construire le projet
+      - name: Build with Maven
         run: mvn clean package --batch-mode
 
-      # 6. Upload JAR
-      - name: Upload artifact
+      # 5. Upload du JAR
+      - name: Upload JAR artifact
         uses: actions/upload-artifact@v3
         with:
           name: my-app-jar
